@@ -17,7 +17,8 @@ defmodule Plug.LoggerJSON do
                        },
     "path":            "/",
     "request_id":      "d90jcl66vp09r8tke3utjsd1pjrg4ln8",
-    "status":          "200"
+    "status":          "200",
+    "headers":         {}
   }
   ```
 
@@ -88,14 +89,17 @@ defmodule Plug.LoggerJSON do
     req_headers = format_map_list(conn.req_headers)
 
     %{
-      "api_version"     => Map.get(req_headers, "accept", "N/A"),
-      "date_time"       => iso8601(:calendar.now_to_datetime(:os.timestamp)),
-      "duration"        => Float.round(duration / 1000, 3),
-      "log_type"        => "http",
-      "method"          => conn.method,
-      "path"            => conn.request_path,
-      "request_id"      => req_id,
-      "status"          => Integer.to_string(conn.status)
+      "api_version" => Map.get(req_headers, "accept", "N/A"),
+      "date_time"   => iso8601(:calendar.now_to_datetime(:os.timestamp)),
+      "duration"    => Float.round(duration / 1000, 3),
+      "log_type"    => "http",
+      "method"      => conn.method,
+      "path"        => conn.request_path,
+      "request_id"  => req_id,
+      "status"      => Integer.to_string(conn.status),
+      "headers"     => format_map_list(req_headers),
+      "email"       => conn.assigns && conn.assigns[:current_user] && conn.assigns.current_user.email,
+      "body_params" => format_map_list(conn.body_params)
     }
   end
 
