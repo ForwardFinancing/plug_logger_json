@@ -175,7 +175,8 @@ defmodule Plug.LoggerJSON do
         %{
           "client_ip" => format_ip(Map.get(req_headers, "x-forwarded-for", "N/A")),
           "client_version" => client_version(req_headers),
-          "params" => format_map_list(conn.params)
+          "params" => format_map_list(conn.params),
+          "headers" => req_headers
         }
 
       _ ->
@@ -204,6 +205,15 @@ defmodule Plug.LoggerJSON do
   @spec filter_values([{binary(), any()}], [binary()]) :: [{binary(), any()}]
   defp filter_values(list, filters) when is_list(list) do
     Enum.map(list, &filter_values(&1, filters))
+  end
+
+  @spec filter_values({binary(), any()}, [binary()]) :: {binary(), any()}
+  defp filter_values({k, v} = _value, filters) do
+    if is_binary(k) and k in filters do
+      {k, "[FILTERED]"}
+    else
+      {k, filter_values(v, filters)}
+    end
   end
 
   defp filter_values(other, _filters), do: format_value(other)

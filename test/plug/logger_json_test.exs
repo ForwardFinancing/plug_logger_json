@@ -159,6 +159,7 @@ defmodule Plug.LoggerJSONTest do
     assert map["client_ip"] == nil
     assert map["client_version"] == nil
     assert map["params"] == nil
+    assert map["headers"] == nil
   end
 
   test "include debug log lines for MyInfoPlugWithIncludeDebugLogging" do
@@ -176,6 +177,8 @@ defmodule Plug.LoggerJSONTest do
     assert map["client_ip"] == "209.49.75.165"
     assert map["client_version"] == "ios/1.5.4"
     assert map["params"] == %{"fake_param" => "1"}
+    assert map["headers"]["x-forwarded-for"] == "209.49.75.165"
+    assert map["headers"]["x-client-version"] == "ios/1.5.4"
   end
 
   test "correct output - Phoenix" do
